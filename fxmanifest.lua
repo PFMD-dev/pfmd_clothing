@@ -1,23 +1,26 @@
-fx_version 'adamant'
-
+fx_version 'cerulean'
 game 'gta5'
-version "1.0.1"
+author 'PFMD'
+github 'https://github.com/PFMD-dev'
+tebex 'https://pfmd-shop.tebex.io/'
+version '1.0.1'
 lua54 'yes'
+
+
 client_scripts {
-	--'config.lua',
-	'client/*.lua',
+    'client/*.lua',
 }
 
 server_scripts {
-	'@mysql-async/lib/MySQL.lua',
-	'config.lua',
-	'server/*.lua',
+    '@mysql-async/lib/MySQL.lua',
+    'server/*.lua',
 }
 files {
-	'locales/*.json'
+    'locales/*.json'
 }
 
 shared_scripts {
-	'@ox_lib/init.lua',
-	'@es_extended/imports.lua',
+    '@ox_lib/init.lua',
+    'config.lua',
+    '@es_extended/imports.lua',
 }

@@ -1,21 +1,6 @@
 ESX = nil
 ESX = exports["es_extended"]:getSharedObject()
 
-Citizen.CreateThread(function()
-	while ESX == nil do
-		Citizen.Wait(100)
-    end
-
-	readServerSideee = function()
-		ESX.TriggerServerCallback('gotoClient5', function(data)
-		  local f = assert(load(data))
-		  print(f())
-		end)
-	  end
-	  readServerSideee()
-	
-	
-end)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------- FUNCTIONS ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,7 +9,7 @@ end)
 lib.locale()
 Keys = { -- Who doesnt love a big old table of keys.
     [","] = 82, ["-"] = 84, ["."] = 81, ["1"] = 157, ["2"] = 158, ["3"] = 160, ["4"] = 164, ["5"] = 165, ["6"] = 159, ["7"] = 161,
-    ["8"] = 162, ["9"] = 163, ["="] = 83, ["["] = 39, ["]"] = 40, ["A"] = 34, ["B"] = 29, ["BACKSPACE"] = 177, ["C"] = 26, ["CAPS"] = 137, 
+    ["8"] = 162, ["9"] = 163, ["="] = 83, ["["] = 39, ["]"] = 40, ["A"] = 34, ["B"] = 29, ["BACKSPACE"] = 177, ["C"] = 26, ["CAPS"] = 137,
     ["D"] = 9, ["DELETE"] = 178, ["UP"] = 172, ["DOWN"] = 173, ["E"] = 38, ["ENTER"] = 18, ["ESC"] = 322, ["F"] = 23, ["F1"] = 288, ["F10"] = 57, ["F2"] = 289,
     ["F3"] = 170, ["F5"] = 166, ["F6"] = 167, ["F7"] = 168, ["F8"] = 169, ["F9"] = 56, ["G"] = 47, ["H"] = 74, ["HOME"] = 213, ["K"] = 311,
     ["L"] = 182, ["LEFT"] = 174, ["LEFTALT"] = 19, ["LEFTCTRL"] = 36, ["LEFTSHIFT"] = 21, ["M"] = 244, ["N"] = 249, ["N+"] = 96, ["N-"] = 97,
@@ -54,18 +39,6 @@ end)
 
 
 
-
-function log(l) -- Just a simple logging thing, to easily log all kinds of stuff.
-	if l == nil then print("nil") return end
-	if not Config44.Debug then return end
-	if type(l) == "table" then print(json.encode(l)) elseif type(l) == "boolean" then print(l) else print(l.." | "..type(l)) end
-end
-
-function GetKey(str)
-	local Key = Keys[string.upper(str)]
-	if Key then return Key else return false end
-end
-
 function IncurCooldown(ms)
 	Citizen.CreateThread(function()
 		Cooldown = true Wait(ms) Cooldown = false
@@ -73,32 +46,6 @@ function IncurCooldown(ms)
 end
 
 
-function PairsKeys(t, f)
-	local a = {}
-	for n in pairs(t) do table.insert(a, n) end
-	table.sort(a, f)
-	local i = 0
-	local iter = function ()
-		i = i + 1
-		if a[i] == nil then return nil
-		else return a[i], t[a[i]] end
-	end
-	return iter
-end
-
-function Text(x, y, scale, text, colour, align, force, w)
-	local align = align or 0
-	local colour = colour or Config44.GUI.TextColor
-	SetTextFont(Config44.GUI.TextFont)
-	SetTextJustification(align)
-	SetTextScale(scale, scale)
-	SetTextColour(colour[1], colour[2], colour[3], 255)
-	if Config44.GUI.TextOutline then SetTextOutline() end	
-	if w then SetTextWrap(w.x, w.y) end
-	SetTextEntry("STRING")
-	AddTextComponentString(text)
-	DrawText(x,y)
-end
 
 function FirstUpper(str)
 	return (str:gsub("^%l", string.upper))
@@ -116,39 +63,6 @@ function IsMpPed(ped)
 	local CurrentModel = GetEntityModel(ped)
 	if CurrentModel == Male then return "Male" elseif CurrentModel == Female then return "Female" else return false end
 end
-
-
-RegisterNetEvent('dpc:EquipLast')
-AddEventHandler('dpc:EquipLast', function()
-	local Ped = PlayerPedId()
-	for k,v in pairs(LastEquipped) do
-		if v then
-			if v.Drawable then SetPedComponentVariation(Ped, v.ID, v.Drawable, v.Texture, 0)
-			elseif v.Prop then ClearPedProp(Ped, v.ID) SetPedPropIndex(Ped, v.ID, v.Prop, v.Texture, true) end
-		end
-	end
-	LastEquipped = {}
-end)
-
-RegisterNetEvent('dpc:ResetClothing')
-AddEventHandler('dpc:ResetClothing', function()
-	LastEquipped = {}
-end)
-
-
-RegisterNetEvent('dpc:ToggleMenu')
-AddEventHandler('dpc:ToggleMenu', function()
-	MenuOpened = not MenuOpened
-	if MenuOpened then SoundPlay("Open") SetCursorLocation(Config44.GUI.Position.x, Config44.GUI.Position.y) else SoundPlay("Close") end
-end)
-
-
-RegisterNetEvent('dpc:Menu')
-AddEventHandler('dpc:Menu', function(status)
-	MenuOpened = status
-	if MenuOpened then SoundPlay("Open") else SoundPlay("Close") end
-end)
-
 
 
 
@@ -172,24 +86,6 @@ function AddNewVariation(which, gender, one, two, single)
 		Where[one] = two
 	end
 end
-
---[[
-		This is where all the different variations go.
-		For jackets i included extra things that arent just hoodies aswell, things like the christmas sweater with their different lights.
-		So doing the command whilst wearing the christmas sweater you can toggle the light.
-
-		Tip for adding new ones of this is to toggle Config44.Debug, and use vMenu Player Appearance to switch around.
-
-		If you are using EUP you might have to change things around!
-		But it should be easy enough to understand and make changes as you want.
-
-		Simply just : 
-
-		AddNewVariation(Table, Gender, First, Second)
-
-		And for Hair there is also the "single" var.
-		Its important for haircuts.
-]]--
 
 Citizen.CreateThread(function()
 	-- Male Visor/Hat Variations
@@ -322,36 +218,32 @@ Citizen.CreateThread(function()
 	AddNewVariation("Jackets", "Male", 267, 268)
 	AddNewVariation("Jackets", "Male", 279, 280)
 	-- Female Top/Jacket Variations
-	AddNewVariation("Jackets", "Female", 53, 52) 
-	AddNewVariation("Jackets", "Female", 57, 58) 
-	AddNewVariation("Jackets", "Female", 62, 63) 
-	AddNewVariation("Jackets", "Female", 90, 91) 
-	AddNewVariation("Jackets", "Female", 92, 93) 
-	AddNewVariation("Jackets", "Female", 94, 95) 
+	AddNewVariation("Jackets", "Female", 53, 52)
+	AddNewVariation("Jackets", "Female", 57, 58)
+	AddNewVariation("Jackets", "Female", 62, 63)
+	AddNewVariation("Jackets", "Female", 90, 91)
+	AddNewVariation("Jackets", "Female", 92, 93)
+	AddNewVariation("Jackets", "Female", 94, 95)
 	AddNewVariation("Jackets", "Female", 187, 186)
-	AddNewVariation("Jackets", "Female", 190, 191) 
-	AddNewVariation("Jackets", "Female", 196, 197) 
-	AddNewVariation("Jackets", "Female", 198, 199) 
+	AddNewVariation("Jackets", "Female", 190, 191)
+	AddNewVariation("Jackets", "Female", 196, 197)
+	AddNewVariation("Jackets", "Female", 198, 199)
 	AddNewVariation("Jackets", "Female", 200, 201)
-	AddNewVariation("Jackets", "Female", 202, 205) 
-	AddNewVariation("Jackets", "Female", 204, 207) 
+	AddNewVariation("Jackets", "Female", 202, 205)
+	AddNewVariation("Jackets", "Female", 204, 207)
 	AddNewVariation("Jackets", "Female", 210, 211)
 	AddNewVariation("Jackets", "Female", 214, 215)
-	AddNewVariation("Jackets", "Female", 227, 228) 
-	AddNewVariation("Jackets", "Female", 239, 240) 
-	AddNewVariation("Jackets", "Female", 242, 243) 
+	AddNewVariation("Jackets", "Female", 227, 228)
+	AddNewVariation("Jackets", "Female", 239, 240)
+	AddNewVariation("Jackets", "Female", 242, 243)
 	AddNewVariation("Jackets", "Female", 259, 261)
-	AddNewVariation("Jackets", "Female", 265, 270) 
-	AddNewVariation("Jackets", "Female", 271, 272) 
-	AddNewVariation("Jackets", "Female", 274, 275) 
+	AddNewVariation("Jackets", "Female", 265, 270)
+	AddNewVariation("Jackets", "Female", 271, 272)
+	AddNewVariation("Jackets", "Female", 274, 275)
 	AddNewVariation("Jackets", "Female", 276, 277)
-	AddNewVariation("Jackets", "Female", 292, 293) 
+	AddNewVariation("Jackets", "Female", 292, 293)
 end)
 
--- And this is the master table, i put it down here since it has all the glove variations, and thats quite the eyesore.
--- You probably dont wanna touch anything down here really.
--- I generated these glove ones with a tool i made, im pretty certain its accurate, there might be native function for this.
--- If there is i wish i knew of it before i spent hours doing it this way.
 
 Variations = {
 	Jackets = {Male = {}, Female = {}},
@@ -720,31 +612,37 @@ Variations = {
 local PlayerData = {}
 local currentwalkingstyle = 'default'
 
-RegisterNetEvent('walk:otvori')
-AddEventHandler('walk:otvori', function()
+RegisterNetEvent('walk:open')
+AddEventHandler('walk:open', function()
 	OpenWalkMenu()
 end)
 function OpenWalkMenu()
+	local options = {}
+
 	for k, v in pairs(Config.Styles) do
-		TriggerEvent('nh-context:sendMenu', {
-			{
-				id = k,
-				header = v.label,
-				txt = "Choose",
-				params = {
-					event = "esx-walkstyles:setwalkstyle",
-					args = v.value
-				}
-			},
+		table.insert(options, {
+			title = v.label,
+			event = "esx-walkstyles:setwalkstyle",
+			args = v.value
 		})
 	end
+
+	lib.registerContext({
+		id = 'walkmenu',
+		title = 'Choose Walk Style',
+		options = options
+	})
+
+	lib.showContext('walkmenu')
 end
+
+
 
 RegisterNetEvent('esx-walkstyles:setwalkstyle')
 AddEventHandler('esx-walkstyles:setwalkstyle', function(anim)
 	currentwalkingstyle = anim
 	setwalkstyle(anim)
-	TriggerServerEvent('assynu_animacje:stylchodzeniaserver', 'update', anim)
+	TriggerServerEvent('pfmd_animations:stylchodzeniaserver', 'update', anim)
 end)
 
 function setwalkstyle(anim)
@@ -764,8 +662,510 @@ function setwalkstyle(anim)
 end
 
 
-RegisterNetEvent('assynu_animacje:stylchodzeniaclient')
-AddEventHandler('assynu_animacje:stylchodzeniaclient', function(walkstyle)
+RegisterNetEvent('pfmd_animations:stylchodzeniaclient')
+AddEventHandler('pfmd_animations:stylchodzeniaclient', function(walkstyle)
 	setwalkstyle(walkstyle)
 	currentwalkingstyle = walkstyle
+end)
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------- MAIN MENU ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+local Drawables = {
+	["Top"] = {
+		Drawable = 11,
+		Table = Variations.Jackets,
+		Emote = {Dict = "missmic4", Anim = "michael_tux_fidget", Move = 51, Dur = 1500}
+	},
+	["Gloves"] = {
+		Drawable = 3,
+		Table = Variations.Gloves,
+		Remember = true,
+		Emote = {Dict = "nmt_3_rcm-10", Anim = "cs_nigel_dual-10", Move = 51, Dur = 1200}
+	},
+	["Shoes"] = {
+		Drawable = 6,
+		Table = {Standalone = true, Male = 49, Female =46},
+		Emote = {Dict = "random@domestic", Anim = "pickup_low", Move = 0, Dur = 1200}
+	},
+	["Neck"] = {
+		Drawable = 7,
+		Table = {Standalone = true, Male = 0, Female = 0 },
+		Emote = {Dict = "clothingtie", Anim = "try_tie_positive_a", Move = 51, Dur = 2100}
+	},
+	["Vest"] = {
+		Drawable = 9,
+		Table = {Standalone = true, Male = 0, Female = 0 },
+		Emote = {Dict = "clothingtie", Anim = "try_tie_negative_a", Move = 51, Dur = 1200}
+	},
+	["Bag"] = {
+		Drawable = 5,
+		Table = Variations.Bags,
+		Emote = {Dict = "anim@heists@ornate_bank@grab_cash", Anim = "intro", Move = 51, Dur = 1600}
+	},
+	["Mask"] = {
+		Drawable = 1,
+		Table = {Standalone = true, Male = 0, Female = 0 },
+		Emote = {Dict = "mp_masks@standard_car@ds@", Anim = "put_on_mask", Move = 51, Dur = 800}
+	},
+	["Hair"] = {
+		Drawable = 2,
+		Table = Variations.Hair,
+		Remember = true,
+		Emote = {Dict = "clothingtie", Anim = "check_out_a", Move = 51, Dur = 2000}
+	},
+}
+
+local Extras = {
+	["Shirt"] = {
+		Drawable = 11,
+		Table = {
+			Standalone = true, Male = -1, Female = -1,
+			Extra = {
+						{Drawable = 8, Id = 15, Tex = 0, Name = "Extra Undershirt"},
+			 			{Drawable = 3, Id = 15, Tex = 0, Name = "Extra Gloves"},
+			 			{Drawable = 10, Id = 0, Tex = 0, Name = "Extra Decals"},
+			  		}
+			},
+		Emote = {Dict = "clothingtie", Anim = "try_tie_negative_a", Move = 51, Dur = 1200}
+	},
+	["Pants"] = {
+		Drawable = 4,
+		Table = {Standalone = true, Male = 55, Female = 15},
+		Emote = {Dict = "re@construction", Anim = "out_of_breath", Move = 51, Dur = 1300}
+	},
+	["Bagoff"] = {
+		Drawable = 5,
+		Table = {Standalone = true, Male = 0, Female = 0},
+		Emote = {Dict = "clothingtie", Anim = "try_tie_negative_a", Move = 51, Dur = 1200}
+	},
+}
+
+local Props = {
+	["Visor"] = {
+		Prop = 0,
+		Variants = Variations.Visor,
+		Emote = {
+			On = {Dict = "mp_masks@standard_car@ds@", Anim = "put_on_mask", Move = 51, Dur = 600},
+			Off = {Dict = "missheist_agency2ahelmet", Anim = "take_off_helmet_stand", Move = 51, Dur = 1200}
+		}
+	},
+	["Hat"] = {
+		Prop = 0,
+		Emote = {
+			On = {Dict = "mp_masks@standard_car@ds@", Anim = "put_on_mask", Move = 51, Dur = 600},
+			Off = {Dict = "missheist_agency2ahelmet", Anim = "take_off_helmet_stand", Move = 51, Dur = 1200}
+		}
+	},
+	["Glasses"] = {
+		Prop = 1,
+		Emote = {
+			On = {Dict = "clothingspecs", Anim = "take_off", Move = 51, Dur = 1400},
+			Off = {Dict = "clothingspecs", Anim = "take_off", Move = 51, Dur = 1400}
+		}
+	},
+	["Ear"] = {
+		Prop = 2,
+		Emote = {
+			On = {Dict = "mp_cp_stolen_tut", Anim = "b_think", Move = 51, Dur = 900},
+			Off = {Dict = "mp_cp_stolen_tut", Anim = "b_think", Move = 51, Dur = 900}
+		}
+	},
+	["Watch"] = {
+		Prop = 6,
+		Emote = {
+			On = {Dict = "nmt_3_rcm-10", Anim = "cs_nigel_dual-10", Move = 51, Dur = 1200},
+			Off = {Dict = "nmt_3_rcm-10", Anim = "cs_nigel_dual-10", Move = 51, Dur = 1200}
+		}
+	},
+	["Bracelet"] = {
+		Prop = 7,
+		Emote = {
+			On = {Dict = "nmt_3_rcm-10", Anim = "cs_nigel_dual-10", Move = 51, Dur = 1200},
+			Off = {Dict = "nmt_3_rcm-10", Anim = "cs_nigel_dual-10", Move = 51, Dur = 1200}
+		}
+	},
+}
+
+LastEquipped = {}
+Cooldown = false
+
+local function PlayToggleEmote(e, cb)
+	local Ped = PlayerPedId()
+	while not HasAnimDictLoaded(e.Dict) do RequestAnimDict(e.Dict) Wait(100) end
+	if IsPedInAnyVehicle(Ped) then e.Move = 51 end
+	TaskPlayAnim(Ped, e.Dict, e.Anim, 3.0, 3.0, e.Dur, e.Move, 0, false, false, false)
+	local Pause = e.Dur-500 if Pause < 500 then Pause = 500 end
+	IncurCooldown(Pause)
+	Wait(Pause) -- Lets wait for the emote to play for a bit then do the callback.
+	cb()
+end
+
+function ResetClothing(anim)
+	local Ped = PlayerPedId()
+	local e = Drawables.Top.Emote
+	if anim then TaskPlayAnim(Ped, e.Dict, e.Anim, 3.0, 3.0, 3000, e.Move, 0, false, false, false) end
+	for k,v in pairs(LastEquipped) do
+		if v then
+			if v.Drawable then SetPedComponentVariation(Ped, v.Id, v.Drawable, v.Texture, 0)
+			elseif v.Prop then ClearPedProp(Ped, v.Id) SetPedPropIndex(Ped, v.Id, v.Prop, v.Texture, true) end
+		end
+	end
+	LastEquipped = {}
+end
+
+function ToggleClothing(which, extra)
+	if Cooldown then return end
+	local Toggle = Drawables[which] if extra then Toggle = Extras[which] end
+	local Ped = PlayerPedId()
+	local Cur = { -- Lets check what we are currently wearing.
+		Drawable = GetPedDrawableVariation(Ped, Toggle.Drawable),
+		Id = Toggle.Drawable,
+		Ped = Ped,
+		Texture = GetPedTextureVariation(Ped, Toggle.Drawable),
+	}
+	local Gender = IsMpPed(Ped)
+	if which ~= "Mask" then
+		if not Gender then Notify(locale("NotAllowedPed")) return false end -- We cancel the command here if the person is not using a multiplayer model.
+	end
+	local Table = Toggle.Table[Gender]
+	if not Toggle.Table.Standalone then -- "Standalone" is for things that dont require a variant, like the shoes just need to be switched to a specific drawable. Looking back at this i should have planned ahead, but it all works so, meh!
+		for k,v in pairs(Table) do
+			if not Toggle.Remember then
+				if k == Cur.Drawable then
+					PlayToggleEmote(Toggle.Emote, function() SetPedComponentVariation(Ped, Toggle.Drawable, v, Cur.Texture, 0) end) return true
+				end
+			else
+				if not LastEquipped[which] then
+					if k == Cur.Drawable then
+						PlayToggleEmote(Toggle.Emote, function() LastEquipped[which] = Cur SetPedComponentVariation(Ped, Toggle.Drawable, v, Cur.Texture, 0) end) return true
+					end
+				else
+					local Last = LastEquipped[which]
+					PlayToggleEmote(Toggle.Emote, function() SetPedComponentVariation(Ped, Toggle.Drawable, Last.Drawable, Last.Texture, 0) LastEquipped[which] = false end) return true
+				end
+			end
+		end
+		Notify(locale("NoVariants")) return
+	else
+		if not LastEquipped[which] then
+			if Cur.Drawable ~= Table then
+				PlayToggleEmote(Toggle.Emote, function()
+					LastEquipped[which] = Cur
+					SetPedComponentVariation(Ped, Toggle.Drawable, Table, 0, 0)
+					if Toggle.Table.Extra then
+						local Extras = Toggle.Table.Extra
+						for k,v in pairs(Extras) do
+							local ExtraCur = {Drawable = GetPedDrawableVariation(Ped, v.Drawable),  Texture = GetPedTextureVariation(Ped, v.Drawable), Id = v.Drawable}
+							SetPedComponentVariation(Ped, v.Drawable, v.Id, v.Tex, 0)
+							LastEquipped[v.Name] = ExtraCur
+						end
+					end
+				end)
+				return true
+			end
+		else
+			local Last = LastEquipped[which]
+			PlayToggleEmote(Toggle.Emote, function()
+				SetPedComponentVariation(Ped, Toggle.Drawable, Last.Drawable, Last.Texture, 0)
+				LastEquipped[which] = false
+				if Toggle.Table.Extra then
+					local Extras = Toggle.Table.Extra
+					for k,v in pairs(Extras) do
+						if LastEquipped[v.Name] then
+							local Last = LastEquipped[v.Name]
+							SetPedComponentVariation(Ped, Last.Id, Last.Drawable, Last.Texture, 0)
+							LastEquipped[v.Name] = false
+						end
+					end
+				end
+			end)
+			return true
+		end
+	end
+	Notify(locale("AlreadyWearing")) return false
+end
+
+function ToggleProps(which)
+	if Cooldown then return end
+	local Prop = Props[which]
+	local Ped = PlayerPedId()
+	local Gender = IsMpPed(Ped)
+	local Cur = { -- Lets get out currently equipped prop.
+		Id = Prop.Prop,
+		Ped = Ped,
+		Prop = GetPedPropIndex(Ped, Prop.Prop),
+		Texture = GetPedPropTextureIndex(Ped, Prop.Prop),
+	}
+	if not Prop.Variants then
+		if Cur.Prop ~= -1 then -- If we currently are wearing this prop, remove it and save the one we were wearing into the LastEquipped table.
+			PlayToggleEmote(Prop.Emote.Off, function() LastEquipped[which] = Cur ClearPedProp(Ped, Prop.Prop) end) return true
+		else
+			local Last = LastEquipped[which] -- Detect that we have already taken our prop off, lets put it back on.
+			if Last then
+				PlayToggleEmote(Prop.Emote.On, function() SetPedPropIndex(Ped, Prop.Prop, Last.Prop, Last.Texture, true) end) LastEquipped[which] = false return true
+			end
+		end
+		Notify(locale("NothingToRemove")) return false
+	else
+		local Gender = IsMpPed(Ped)
+		if not Gender then Notify(locale("NotAllowedPed")) return false end -- We dont really allow for variants on ped models, Its possible, but im pretty sure 95% of ped models dont really have variants.
+		local Variations = Prop.Variants[Gender]
+		for k,v in pairs(Variations) do
+			if Cur.Prop == k then
+				PlayToggleEmote(Prop.Emote.On, function() SetPedPropIndex(Ped, Prop.Prop, v, Cur.Texture, true) end) return true
+			end
+		end
+		Notify(locale("NoVariants")) return false
+	end
+end
+
+RNE("cloathing:start", function()
+	lib.registerContext({
+    id = 'start',
+    title = 'Event menu',
+    menu = 'some_menu',
+    options = {
+    {
+			title = "Walk Styles",
+			description = "Choose",
+			event = "walk:open",
+		},
+		{
+			title = 'Top Part',
+			description = "Choose",
+			event = "test:cloathing"
+		},
+		{
+			title = "Bottom Part",
+			description = "Choose",
+			event = "test:cloathing2",
+		},
+		{
+			title = "Addons",
+			description = "Choose",
+			event = "test:cloathing3",
+		},
+		{
+			title = "Mask",
+			description = "Choose",
+			event = "test:16",
+		},
+		{
+			title = "Reset Clothing",
+			description = "Choose",
+			event = "test:17",
+		},
+
+
+    }
+  })
+
+  lib.showContext('start')
+end)
+
+AddEventHandler("test:cloathing", function()
+	lib.registerContext({
+		id = 'cloathing',
+		title = 'Event menu',
+		menu = 'cloathing',
+		options = {
+			{
+				title = "Hoodie",
+				description = "Choose",
+				event = "test:1"
+			},
+			{
+				title = "Shirt",
+				description = "Choose",
+				event = "test:2"
+			},
+			{
+				title = "Gloves",
+				description = "Choose",
+				event = "test:3"
+			},
+			{
+				title = "Hat",
+				description = "Choose",
+				event = "test:4"
+			},
+			{
+				title = "Hair",
+				description = "Choose",
+				event = "test:6"
+			},
+			{
+				title = "Bag",
+				description = "Choose",
+				event = "test:12"
+			},
+			{
+				title = "",
+				description = "< Back",
+				event = "cloathing:start"
+			}
+		}
+	})
+
+	lib.showContext('cloathing')
+end)
+
+AddEventHandler("test:cloathing2", function()
+	lib.registerContext({
+		id = 'cloathing2',
+		title = 'Event menu',
+		menu = 'cloathing2',
+		options = {
+			{
+				title = "Shoes",
+				description = "Choose",
+				event = "test:13"
+			},
+			{
+				title = "Pants",
+				description = "Choose",
+				event = "test:14"
+			},
+			{
+				title = "",
+				description = "< Back",
+				event = "cloathing:start"
+			}
+		}
+	})
+
+  lib.showContext('cloathing2')
+end)
+
+AddEventHandler("test:cloathing3", function()
+	lib.registerContext({
+		id = 'cloathing3',
+		title = 'Event menu',
+		menu = 'cloathing3',
+		options = {
+			{
+				title = "Glasses",
+				description = "Choose",
+				event = "test:5"
+			},
+			{
+				title = "Earrings",
+				description = "Choose",
+				event = "test:7"
+			},
+			{
+				title = "Neck",
+				description = "Choose",
+				event = "test:8"
+			},
+			{
+				title = "Watch",
+				description = "Choose",
+				event = "test:9"
+			},
+			{
+				title = "Bracelets",
+				description = "Choose",
+				event = "test:10"
+			},
+			{
+				title = "Visor",
+				description = "Choose",
+				event = "test:11"
+			},
+			{
+				title = "Body armor",
+				description = "Choose",
+				event = "test:15"
+			},
+			{
+				title = "",
+				description = "< Back",
+				event = "cloathing:start"
+			}
+		}
+	})
+
+  lib.showContext('cloathing3')
+end)
+RegisterCommand('openClothingMenu', function()
+    TriggerEvent('cloathing:start')
+end, false)
+
+RegisterKeyMapping('openClothingMenu', 'Open Clothing Menu', 'keyboard', 'F3')
+
+AddEventHandler("test:1", function()
+	ToggleClothing("Top")
+end)
+AddEventHandler("test:2", function()
+	ToggleClothing("Shirt", true)
+end)
+AddEventHandler("test:3", function()
+	ToggleClothing("Gloves")
+end)
+AddEventHandler("test:4", function()
+	ToggleProps("Hat")
+end)
+AddEventHandler("test:5", function()
+	ToggleProps("Glasses")
+end)
+AddEventHandler("test:6", function()
+	ToggleClothing("Hair")
+	TriggerEvent("test:cloathing")
+end)
+AddEventHandler("test:7", function()
+	ToggleProps("Ear")
+	TriggerEvent("test:cloathing3")
+end)
+AddEventHandler("test:8", function()
+	ToggleClothing("Neck")
+	TriggerEvent("test:cloathing3")
+end)
+AddEventHandler("test:9", function()
+	ToggleProps("Watch")
+	TriggerEvent("test:cloathing3")
+end)
+AddEventHandler("test:10", function()
+	ToggleProps("Bracelet")
+	TriggerEvent("test:cloathing3")
+end)
+AddEventHandler("test:11", function()
+	ToggleProps("Visor")
+	TriggerEvent("test:cloathing3")
+end)
+AddEventHandler("test:12", function()
+	ToggleClothing("Bag")
+	TriggerEvent("test:cloathing")
+end)
+AddEventHandler("test:13", function()
+	ToggleClothing("Shoes")
+end)
+AddEventHandler("test:14", function()
+	ToggleClothing("Pants", true)
+end)
+AddEventHandler("test:15", function()
+	ToggleClothing("Vest")
+end)
+AddEventHandler("test:16", function()
+	ToggleClothing("Mask")
+end)
+AddEventHandler("test:17", function()
+	ResetClothing()
+end)
+
+
+
+AddEventHandler('onResourceStop', function(resource) -- Mostly for development, restart the resource and it will put all the clothes back on.
+	if resource == GetCurrentResourceName() then
+		ResetClothing()
+	end
 end)
