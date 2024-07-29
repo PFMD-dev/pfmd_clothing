@@ -1,6 +1,6 @@
 lib.locale()
-RegisterServerEvent('assynu_animacje:stylchodzeniaserver')
-AddEventHandler('assynu_animacje:stylchodzeniaserver', function(x, anim)
+RegisterServerEvent('pfmd_animations:stylchodzeniaserver')
+AddEventHandler('pfmd_animations:stylchodzeniaserver', function(x, anim)
 	local loadFile = LoadResourceFile(GetCurrentResourceName(), "./walkingstyles.json")  
 	local _source = source
 	local chodzenie = {}
@@ -12,12 +12,12 @@ AddEventHandler('assynu_animacje:stylchodzeniaserver', function(x, anim)
 		if chodzenie ~= nil then
 			for k,v in pairs(chodzenie) do
 				if v.identifier == xPlayer.getIdentifier() and v.digit == xPlayer.digit then
-					TriggerClientEvent('assynu_animacje:stylchodzeniaclient', _source, v.anim)
+					TriggerClientEvent('pfmd_animations:stylchodzeniaclient', _source, v.anim)
 					found = true
 				end
 			end
 			if not found then
-				TriggerClientEvent('assynu_animacje:stylchodzeniaclient', _source, 'default')
+				TriggerClientEvent('pfmd_animations:stylchodzeniaclient', _source, 'default')
 			end
 		end
 	elseif x == 'update' then
