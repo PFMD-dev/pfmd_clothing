@@ -8,7 +8,7 @@ local GetCurrentResourceName = GetCurrentResourceName()
 
 local resource = GetCurrentResourceName
 local versionData = GetResourceMetadata(resource, 'version')
-local gitRepo = 'https://raw.githubusercontent.com/PFMD-dev/pfmd_cloathing/master/fxmanifest.lua'
+local gitRepo = 'https://raw.githubusercontent.com/PFMD-dev/pfmd_clothing/master/fxmanifest.lua'
 function versionCheck(error, response, headers)
     local response = tostring(response)
     for line in response:gmatch("([^\n]*)\n?") do
